@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Administração</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, select {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            max-width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: #fff;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .logout-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Painel de Administração</h1>
+
+    <!-- Exibir mensagem de login se não estiver logado -->
+    <div id="loginMessage" style="display: none;">
+        <p>Você precisa estar logado para acessar o painel de administração.</p>
+        <a href="login_admin.html" onclick="login()">Clique aqui para fazer login</a>
+    </div>
+
+    <!-- Formulário de administração -->
+    <div id="adminPanel" style="display: none;">
+        <form method="POST" action="/admin.html" onsubmit="handleSubmit(event)">
+            <label for="numero">Número:</label>
+            <input type="number" id="numero" name="numero" min="1" required>
+            
+            <label for="status">Status:</label>
+            <select id="status" name="status">
+                <option value="disponivel">Disponível</option>
+                <option value="comprado">Comprado</option>
+            </select>
+
+            <button type="submit">Atualizar Status</button>
+        </form>
+
+        <h2>Histórico de Atualizações</h2>
+        <ul id="historico">
+            <!-- O histórico será gerado dinamicamente aqui -->
+        </ul>
+
+        <button class="logout-btn" onclick="logout()">Sair</button>
+    </div>
+
+    <script>
+        // Função para verificar se o usuário está logado
+        function isLoggedIn() {
+            return localStorage.getItem('isLoggedIn') === 'true';
+        }
+
+        // Função para fazer login
+        function login() {
+            const username = prompt("Digite o nome de usuário:");
+            const password = prompt("Digite a senha:");
+
+            if (username === 'milena.silva' && password === '212450') {
+                localStorage.setItem('isLoggedIn', 'true');
+                window.location.reload(); // Recarregar a página após login
+            } else {
+                alert("Credenciais incorretas!");
+            }
+        }
+
+        // Função de logout
+        function logout() {
+            localStorage.setItem('isLoggedIn', 'false');
+            window.location.reload(); // Recarregar a página após logout
+        }
+
+        // Função para carregar o histórico de atualizações
+        function loadHistorico() {
+            const historico = JSON.parse(localStorage.getItem('historico')) || [];
+            const historicoElement = document.getElementById('historico');
+            historicoElement.innerHTML = ''; // Limpa o histórico atual
+
+            // Inverter a ordem para mostrar as atualizações mais recentes no topo
+            historico.reverse().forEach(item => {
+                const li = document.createElement('li');
+                const status = item.status === 'disponivel' ? 'Disponível' : 'Comprado';
+                li.textContent = `Número ${item.numero} alterado para ${status}`;
+                historicoElement.appendChild(li);
+            });
+        }
+
+        // Função para atualizar o histórico
+        function updateHistorico(numero, status) {
+            const historico = JSON.parse(localStorage.getItem('historico')) || [];
+            historico.push({ numero, status });
+            localStorage.setItem('historico', JSON.stringify(historico));
+            loadHistorico(); // Atualiza a lista de histórico
+        }
+
+        // Função para manipular o envio do formulário
+        function handleSubmit(event) {
+            event.preventDefault(); // Previne o comportamento padrão de envio do formulário
+            const numero = document.getElementById('numero').value;
+            const status = document.getElementById('status').value;
+
+            // Atualiza o histórico com a alteração
+            updateHistorico(numero, status);
+
+            // Exibe uma mensagem de confirmação
+            alert(`Número: ${numero} alterado para ${status === 'disponivel' ? 'Disponível' : 'Comprado'}`);
+        }
+
+        // Verifica se está logado ao carregar a página
+        window.onload = () => {
+            if (isLoggedIn()) {
+                document.getElementById('adminPanel').style.display = 'block';
+                document.getElementById('loginMessage').style.display = 'none';
+                loadHistorico();
+            } else {
+                document.getElementById('adminPanel').style.display = 'none';
+                document.getElementById('loginMessage').style.display = 'block';
+            }
+        };
+    </script>
+
+</body>
+</html>

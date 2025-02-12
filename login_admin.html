@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Administração</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .login-form {
+            width: 300px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .login-form input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .login-form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .login-form button:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: red;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-form">
+        <h2>Login Administrativo</h2>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Nome de usuário" required><br>
+            <input type="password" id="password" placeholder="Senha" required><br>
+            <button type="submit">Entrar</button>
+        </form>
+        <div class="error" id="error"></div>
+    </div>
+
+    <script>
+        const validUsername = "milena.silva";
+        const validPassword = "212450";
+
+        const loginForm = document.getElementById("loginForm");
+        const usernameField = document.getElementById("username");
+        const passwordField = document.getElementById("password");
+        const errorField = document.getElementById("error");
+
+        loginForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const username = usernameField.value;
+            const password = passwordField.value;
+
+            if (username === validUsername && password === validPassword) {
+                localStorage.setItem('isLoggedIn', 'true');  // Grava no localStorage
+                window.location.href = "admin.html";  // Redireciona para o painel de administração
+            } else {
+                errorField.textContent = "Nome de usuário ou senha incorretos!";
+            }
+        });
+    </script>
+
+</body>
+</html>
