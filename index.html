@@ -167,7 +167,7 @@
             document.getElementById("error-message").textContent = "";  // Limpa mensagem de erro
 
             // Envia os dados via fetch
-            fetch('http://localhost:3000/salvar', {
+            fetch('https://rifa-test3.onrender.com/salvar', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -197,7 +197,7 @@
 
         // Função para buscar e exibir os dados da rifa
         function fetchData() {
-            fetch('http://localhost:3000/getdata')  // URL corrigida
+            fetch('https://rifa-test3.onrender.com/getdata')  // URL corrigida
                 .then(response => response.json())
                 .then(data => {
                     const tableBody = document.getElementById('dataBody');
