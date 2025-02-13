@@ -1,8 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
-const cors = require('cors'); // Importando CORS
-const fs = require('fs');  // Para simular o armazenamento de dados (pode ser substituído por um banco de dados real)
+const cors = require('cors');
+const fs = require('fs');
 
 const app = express();
 const port = 3000;
@@ -58,13 +58,35 @@ app.get('/getdata', (req, res) => {
 
 const NUMEROS_FILE = './numeros.json';
 
-// Rota para buscar os números
-app.get('/numbers', (req, res) => {
+// Função para garantir que o arquivo numeros.json exista
+function verificarArquivoNumeros(callback) {
     fs.readFile(NUMEROS_FILE, 'utf8', (err, data) => {
+        if (err) {
+            // Se o arquivo não existir, cria um arquivo inicial
+            const numerosInicial = { numeros: [] };
+            fs.writeFile(NUMEROS_FILE, JSON.stringify(numerosInicial, null, 2), (writeErr) => {
+                if (writeErr) {
+                    return callback(writeErr);
+                }
+                callback(null, numerosInicial);
+            });
+        } else {
+            try {
+                const numeros = JSON.parse(data);
+                callback(null, numeros);
+            } catch (parseErr) {
+                callback(parseErr);
+            }
+        }
+    });
+}
+
+// Rota para buscar os números
+app.get('/update-number', (req, res) => {
+    verificarArquivoNumeros((err, numeros) => {
         if (err) {
             return res.status(500).json({ message: 'Erro ao ler o arquivo de números.' });
         }
-        const numeros = JSON.parse(data);
         res.json(numeros);
     });
 });
@@ -77,14 +99,12 @@ app.post('/update-number', (req, res) => {
         return res.status(400).json({ message: 'Número e status são obrigatórios.' });
     }
 
-    // Lê o arquivo numeros.json
-    fs.readFile(NUMEROS_FILE, 'utf8', (err, data) => {
+    verificarArquivoNumeros((err, numeros) => {
         if (err) {
             return res.status(500).json({ message: 'Erro ao ler o arquivo de números.' });
         }
 
-        const numeros = JSON.parse(data);
-        const numeroIndex = numeros.numeros.findIndex(n => n.numero === numero);
+        const numeroIndex = numeros.numeros.findIndex(n => n.numero == numero); // Comparação flexível
 
         if (numeroIndex === -1) {
             return res.status(404).json({ message: 'Número não encontrado.' });
