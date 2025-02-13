@@ -7,7 +7,6 @@ const fs = require('fs');  // Para simular o armazenamento de dados (pode ser su
 const app = express();
 const port = 3000;
 
-app.use(express.static(__dirname));
 // Habilita CORS para todas as origens
 app.use(cors());
 
