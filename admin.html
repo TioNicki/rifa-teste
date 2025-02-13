@@ -150,7 +150,7 @@
 
             try {
                 // Envia os dados para o servidor
-                const response = await fetch('https://rifa-test3.onrender.com/update-number', {
+                const response = await fetch('http://localhost:3000/update-number', { // Atualize a URL aqui
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ numero, status })
