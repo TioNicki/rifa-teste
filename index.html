@@ -73,15 +73,36 @@
             box-sizing: border-box;
         }
         .qr-box {
-            margin-top: 20px;
-            background-color: #d63384;
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            display: inline-block;
-            text-align: center;
-            font-weight: bold;
+        margin-top: 20px;
+        background-color: #d63384; /* Cor verde do WhatsApp */
+        color: white;
+        padding: 30px;
+        border-radius: 10px;
+        display: inline-block;
+        text-align: center;
+        font-weight: bold;
+        position: relative;
         }
+
+        .qr-box a {
+        display: inline-flex;
+        align-items: center;
+        background-color: white;
+        color: #25D366;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-weight: bold;
+        text-decoration: none;
+        font-size: 16px;
+        margin-top: 10px;
+        }
+
+        .qr-box a img {
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
+        }
+
         .qr-message {
             font-size: 16px;
             margin-bottom: 20px;
@@ -140,7 +161,11 @@
                 <br>
                 <br>
                 <div>Por favor, encaminhe o comprovante de pix para o WhatsApp abaixo para validar seu número:</div>
-                <div><a href="https://wa.me/+5538999126156" target="_blank">Clique aqui para WhatsApp</a></div>
+                <div><a href="https://wa.me/+5538999126156" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+                    Fale no WhatsApp
+                </a>
+                </div>
             </div>
         </div>
 
