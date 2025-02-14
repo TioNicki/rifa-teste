@@ -7,8 +7,9 @@ const fs = require('fs');
 const app = express();
 const port = 3000;
 
-// Habilita CORS para todas as origens
-app.use(cors());
+app.use(cors({
+    origin: 'https://aquamarine-bubblegum-cafe41.netlify.app'
+}));
 
 // Configuração do body-parser
 app.use(bodyParser.json());
