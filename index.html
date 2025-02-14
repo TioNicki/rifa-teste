@@ -225,57 +225,58 @@ async function checkNumberAvailability(numero) {
 function showAvailableNumbers(numbers) {
     const availableNumbers = numbers.filter(num => num.status !== 'comprado');
 
-    // Gerar lista de números disponíveis
-    const numbersList = availableNumbers.map(num => num.numero).join(", ");
+    // Criando o fundo transparente para foco na caixa de diálogo
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100vw';
+    overlay.style.height = '100vh';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.3)'; // Fundo levemente escuro para destaque
+    overlay.style.display = 'flex';
+    overlay.style.alignItems = 'center';
+    overlay.style.justifyContent = 'center';
+    overlay.style.zIndex = '999';
+    overlay.style.opacity = '0.7'; // Transparência de 70%
+    document.body.appendChild(overlay);
 
+    // Criando a caixa de diálogo
     const dialog = document.createElement('div');
-    dialog.style.position = 'fixed';
-    dialog.style.top = '50%';
-    dialog.style.left = '50%';
-    dialog.style.transform = 'translate(-50%, -50%)';
+    dialog.style.position = 'absolute';
     dialog.style.backgroundColor = '#fff';
     dialog.style.border = '2px solid #d63384';
     dialog.style.padding = '15px';
     dialog.style.textAlign = 'center';
     dialog.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
     dialog.style.zIndex = '1000';
-    dialog.style.maxWidth = '90%';  // Ajusta a largura para 90% da tela
-    dialog.style.width = 'auto';   // Largura automática para dispositivos pequenos
-    dialog.style.height = 'auto';  // Ajuste automático da altura
-    dialog.style.opacity = '0.9';  // Torna o fundo um pouco transparente
-    dialog.style.borderRadius = '10px';  // Bordas arredondadas
+    dialog.style.borderRadius = '10px';
+    dialog.style.opacity = '1';
+    dialog.style.width = '280px';  // Ajustado para ser do mesmo tamanho das demais
+    dialog.style.maxWidth = '90%';
 
-    // Para telas pequenas, ajuste o tamanho da fonte e o padding
-    if (window.innerWidth <= 600) {
-        dialog.style.fontSize = '14px';
-        dialog.style.padding = '10px';
-    } else {
-        dialog.style.fontSize = '16px';
-        dialog.style.padding = '15px';
-    }
+    // Conteúdo da caixa de diálogo
+    dialog.innerHTML = `
+        <h3 style="font-size: 16px; color: #d63384; margin-bottom: 10px;">Número Não Disponível</h3>
+        <p style="font-size: 14px; color: #333; margin-bottom: 10px;">O número selecionado já foi comprado. Escolha um dos disponíveis abaixo:</p>
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; padding: 5px;">
+            ${availableNumbers.map(num => `
+                <span class="number" style="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; background-color: #d63384; color: white; border-radius: 50%; cursor: pointer; font-size: 12px; font-weight: bold;">
+                    ${num.numero}
+                </span>
+            `).join('')}
+        </div>
+        <button onclick="closeDialog()" style="margin-top: 10px; background-color: #d63384; color: white; padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">Fechar</button>
+    `;
 
-    // Se existirem números disponíveis
-    if (availableNumbers.length > 0) {
-        dialog.innerHTML = `
-            <h3 style="font-size: 18px; color: #d63384;">Número Não Disponível</h3>
-            <p style="font-size: 16px;">O número selecionado já foi comprado. Por favor, escolha um dos números disponíveis abaixo:</p>
-            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
-                ${availableNumbers.map(num => `<span style="background-color: #d63384; color: white; padding: 8px 12px; border-radius: 50%; font-weight: bold; font-size: 14px;">${num.numero}</span>`).join('')}
-            </div>
-            <button onclick="closeDialog()" style="margin-top: 20px; background-color: #d63384; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">Fechar</button>
-        `;
-        document.body.appendChild(dialog);
-    } else {
-        // Caso não haja números disponíveis, fecha a caixa de diálogo automaticamente
-        alert("Todos os números já foram comprados. Tente novamente mais tarde.");
-    }
+    // Adicionando a caixa de diálogo ao overlay
+    overlay.appendChild(dialog);
 }
 
 // Função para fechar a caixa de diálogo
 function closeDialog() {
-    const dialog = document.querySelector('div[style*="position: fixed"]');
-    if (dialog) {
-        dialog.remove();
+    const overlay = document.querySelector('div[style*="position: fixed"][style*="z-index: 999"]');
+    if (overlay) {
+        overlay.remove();
     }
 }
 // Alteração no submit do formulário para verificar a disponibilidade do número
@@ -375,3 +376,4 @@ document.getElementById("payment-form").addEventListener("submit", function (eve
     </script>        
 </body>
 </html>
+
