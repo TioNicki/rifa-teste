@@ -150,7 +150,6 @@
                 <button type="submit">Reservar e Pagar</button>
             </form>
         </div>
-
         <div id="pix-container" class="hidden">
             <div class="qr-box">
                 <div class="qr-message">Chave Pix</div>
@@ -178,19 +177,60 @@
         <div class="error-message" id="error-message"></div>
 
     </div>
+    
 
     <script>
+        // Função para buscar os números da rifa
+        async function checkNumbers() {
+            try {
+                const response = await fetch('https://rifa-test3.onrender.com/numbers');
+                const data = await response.json();
+    
+                const numbersGrid = document.querySelector('.number-grid');
+                numbersGrid.innerHTML = ''; // Limpar números anteriores
+    
+                data.numeros.forEach(num => {
+                    const numberElement = document.createElement('div');
+                    numberElement.classList.add('number');
+    
+                    numberElement.textContent = num.numero;
+    
+                    // Verifica se o número foi comprado e adiciona a classe adequada
+                    if (num.status === 'comprado') {
+                        numberElement.style.backgroundColor = '#ff4c4c'; // Cor de fundo para números comprados
+                        numberElement.style.cursor = 'not-allowed'; // Impede a seleção
+                    } else {
+                        numberElement.style.backgroundColor = '#d63384'; // Cor para números disponíveis
+                        numberElement.style.cursor = 'pointer'; // Permite a seleção
+                        numberElement.onclick = () => selectNumber(num.numero); // Função de seleção de número
+                    }
+    
+                    numbersGrid.appendChild(numberElement);
+                });
+            } catch (error) {
+                console.error('Erro ao buscar números:', error);
+            }
+        }
+    
+        // Função para selecionar o número e preenchê-lo no formulário
+        function selectNumber(numero) {
+            document.getElementById('numero').value = numero;
+        }
+    
+        // Chama a função para carregar os números ao carregar a página
+        window.onload = checkNumbers;
+    
         document.getElementById("payment-form").addEventListener("submit", function (event) {
             event.preventDefault();
-
+    
             const nome = document.getElementById("nome").value;
             const telefone = document.getElementById("telefone").value;
             const numero = document.getElementById("numero").value;
-
+    
             // Exibe o indicador de carregamento
             document.getElementById("loading-indicator").style.display = "block";
             document.getElementById("error-message").textContent = "";  // Limpa mensagem de erro
-
+    
             // Envia os dados via fetch
             fetch('https://rifa-test3.onrender.com/salvar', {
                 method: 'POST',
@@ -219,34 +259,6 @@
                 document.getElementById("error-message").textContent = "Erro ao salvar dados. Tente novamente.";
             });
         });
-
-        // Função para buscar e exibir os dados da rifa
-        function fetchData() {
-            fetch('https://rifa-test3.onrender.com/getdata')  // URL corrigida
-                .then(response => response.json())
-                .then(data => {
-                    const tableBody = document.getElementById('dataBody');
-                    tableBody.innerHTML = ''; // Limpar dados anteriores
-    
-                    if (data.length > 0) {
-                        data.forEach(item => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                                <td>${item.nome_completo}</td>
-                                <td>${item.telefone}</td>
-                                <td>${item.numero_rifa}</td>
-                            `;
-                            tableBody.appendChild(row);
-                        });
-                    } else {
-                        tableBody.innerHTML = '<tr><td colspan="3">Nenhum dado encontrado.</td></tr>';
-                    }
-                })
-                .catch(error => console.error('Erro ao buscar os dados:', error));
-        }
-
-        // Carregar os dados quando a página for carregada
-        window.onload = fetchData;
-    </script>    
+    </script>        
 </body>
 </html>
