@@ -177,7 +177,7 @@
 // Função para carregar os números atualizados
 async function loadNumeros() {
     try {
-        const response = await fetch('https://rifa-test3.onrender.com/numbers');
+        const response = await fetch('https://rifa-test3.onrender.com/update-number');
         const data = await response.json();
         console.log('Números atualizados:', data);
 
