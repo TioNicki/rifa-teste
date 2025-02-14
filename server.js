@@ -106,6 +106,7 @@ app.post('/update-number', (req, res) => {
 
         const numeroIndex = numeros.numeros.findIndex(n => n.numero == numero); // Comparação flexível
 
+
         if (numeroIndex === -1) {
             return res.status(404).json({ message: 'Número não encontrado.' });
         }
