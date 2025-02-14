@@ -206,18 +206,22 @@ async function checkNumberAvailability(numero) {
 // Função para verificar a disponibilidade do número
 async function checkNumberAvailability(numero) {
     try {
-        const response = await fetch(`https://rifa-test3.onrender.com/numbers`);
+        const response = await fetch('https://rifa-test3.onrender.com/update-number');
         const data = await response.json();
 
-        const number = data.numeros.find(num => num.numero === numero);
-        return number && number.status !== 'comprado';
+        const numeroEncontrado = data.numeros.find(num => num.numero === parseInt(numero));
+
+        if (numeroEncontrado && numeroEncontrado.status === 'comprado') {
+            return false; // O número não está disponível
+        }
+        return true; // O número está disponível
     } catch (error) {
-        console.error('Erro ao verificar disponibilidade:', error);
-        return false;  // Retorna falso em caso de erro
+        console.error('Erro ao verificar disponibilidade do número:', error);
+        return false;
     }
 }
 
-// Função para mostrar os números disponíveis
+// Função para exibir os números disponíveis em uma caixa de diálogo
 function showAvailableNumbers(numbers) {
     const availableNumbers = numbers.filter(num => num.status !== 'comprado');
     
@@ -231,29 +235,19 @@ function showAvailableNumbers(numbers) {
     dialog.style.transform = 'translate(-50%, -50%)';
     dialog.style.backgroundColor = '#fff';
     dialog.style.border = '2px solid #d63384';
-    dialog.style.padding = '15px';
+    dialog.style.padding = '20px';
     dialog.style.textAlign = 'center';
     dialog.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
     dialog.style.zIndex = '1000';
-    dialog.style.maxWidth = '80%';  // Ajusta o tamanho da caixa
-    dialog.style.width = '300px';   // Largura fixa para manter o tamanho pequeno
-    dialog.style.opacity = '0.9';  // Torna o fundo um pouco transparente
-
-    // Se existirem números disponíveis
-    if (availableNumbers.length > 0) {
-        dialog.innerHTML = `  
-            <h3 style="font-size: 18px; color: #d63384;">Número Não Disponível</h3>
-            <p style="font-size: 16px;">O número selecionado já foi comprado. Por favor, escolha um dos números disponíveis abaixo:</p>
-            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
-                ${availableNumbers.map(num => `<span style="background-color: #d63384; color: white; padding: 8px 12px; border-radius: 50%; font-weight: bold; font-size: 14px;">${num.numero}</span>`).join('')}
-            </div>
-            <button onclick="closeDialog()" style="margin-top: 20px; background-color: #d63384; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">Fechar</button>
-        `;
-        document.body.appendChild(dialog);
-    } else {
-        // Caso não haja números disponíveis, fecha a caixa de diálogo automaticamente
-        alert("Todos os números já foram comprados. Tente novamente mais tarde.");
-    }
+    dialog.innerHTML = `
+        <h3>Número Não Disponível</h3>
+        <p>O número selecionado já foi comprado. Por favor, escolha um dos números disponíveis abaixo:</p>
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+            ${availableNumbers.map(num => `<span style="background-color: #d63384; color: white; padding: 10px; border-radius: 50%; font-weight: bold;">${num.numero}</span>`).join('')}
+        </div>
+        <button onclick="closeDialog()" style="margin-top: 20px; background-color: #d63384; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer;">Fechar</button>
+    `;
+    document.body.appendChild(dialog);
 }
 
 // Função para fechar a caixa de diálogo
@@ -264,27 +258,22 @@ function closeDialog() {
     }
 }
 
-// Função para verificar disponibilidade e processar a compra
+// Alteração no submit do formulário para verificar a disponibilidade do número
 document.getElementById("payment-form").addEventListener("submit", function (event) {
     event.preventDefault();
 
     const nome = document.getElementById("nome").value;
     const telefone = document.getElementById("telefone").value;
     const numero = document.getElementById("numero").value;
-    const submitButton = document.querySelector('button[type="submit"]');
 
-    // Desabilitar o botão enquanto processa
-    submitButton.disabled = true;
-
-    // Exibe o indicador de carregamento
-    document.getElementById("loading-indicator").style.display = "block";
-    document.getElementById("error-message").textContent = "";  // Limpa mensagem de erro
-
-    // Verifica a disponibilidade do número
+    // Verifica se o número está disponível
     checkNumberAvailability(numero)
         .then(isAvailable => {
             if (isAvailable) {
                 // Se o número estiver disponível, envia os dados via fetch
+                document.getElementById("loading-indicator").style.display = "block";
+                document.getElementById("error-message").textContent = "";  // Limpa mensagem de erro
+
                 fetch('https://rifa-test3.onrender.com/salvar', {
                     method: 'POST',
                     headers: {
@@ -295,8 +284,6 @@ document.getElementById("payment-form").addEventListener("submit", function (eve
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById("loading-indicator").style.display = "none";  // Esconde o carregamento
-                    submitButton.disabled = false;  // Reabilita o botão
-                    
                     if (data.message) {
                         document.getElementById("pix-container").classList.remove("hidden"); // Exibe a seção de pagamento
                     } else {
@@ -306,7 +293,6 @@ document.getElementById("payment-form").addEventListener("submit", function (eve
                 .catch(error => {
                     console.error("Erro ao salvar dados:", error);
                     document.getElementById("loading-indicator").style.display = "none"; // Esconde o carregamento
-                    submitButton.disabled = false;  // Reabilita o botão
                     document.getElementById("error-message").textContent = "Erro ao salvar dados. Tente novamente.";
                 });
             } else {
@@ -315,16 +301,14 @@ document.getElementById("payment-form").addEventListener("submit", function (eve
                     .then(response => response.json())
                     .then(data => showAvailableNumbers(data.numeros))
                     .catch(error => console.error('Erro ao buscar números disponíveis:', error));
-                
-                submitButton.disabled = false;  // Reabilita o botão
             }
         })
         .catch(error => {
             console.error('Erro ao verificar disponibilidade:', error);
             document.getElementById("error-message").textContent = "Erro ao verificar disponibilidade do número. Tente novamente.";
-            submitButton.disabled = false;  // Reabilita o botão
         });
 });
+
 
         // Chama a função para carregar os números ao carregar a página
         window.onload = checkNumbers;
