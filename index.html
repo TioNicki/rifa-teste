@@ -227,7 +227,6 @@ function showAvailableNumbers(numbers) {
     
     // Gerar lista de números disponíveis
     const numbersList = availableNumbers.map(num => num.numero).join(", ");
-
     const dialog = document.createElement('div');
     dialog.style.position = 'fixed';
     dialog.style.top = '50%';
@@ -235,10 +234,24 @@ function showAvailableNumbers(numbers) {
     dialog.style.transform = 'translate(-50%, -50%)';
     dialog.style.backgroundColor = '#fff';
     dialog.style.border = '2px solid #d63384';
-    dialog.style.padding = '20px';
+    dialog.style.padding = '15px';
     dialog.style.textAlign = 'center';
     dialog.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
     dialog.style.zIndex = '1000';
+    dialog.style.maxWidth = '90%';  // Ajusta a largura para 90% da tela
+    dialog.style.width = 'auto';   // Largura automática para dispositivos pequenos
+    dialog.style.height = 'auto';  // Ajuste automático da altura
+    dialog.style.opacity = '0.9';  // Torna o fundo um pouco transparente
+    dialog.style.borderRadius = '10px';  // Bordas arredondadas
+
+    // Para telas pequenas, ajuste o tamanho da fonte e o padding
+    if (window.innerWidth <= 600) {
+        dialog.style.fontSize = '14px';
+        dialog.style.padding = '10px';
+    } else {
+        dialog.style.fontSize = '16px';
+        dialog.style.padding = '15px';
+    }
     dialog.innerHTML = `
         <h3>Número Não Disponível</h3>
         <p>O número selecionado já foi comprado. Por favor, escolha um dos números disponíveis abaixo:</p>
