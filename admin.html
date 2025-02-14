@@ -144,33 +144,62 @@
 
         // Função para manipular o envio do formulário
         async function handleSubmit(event) {
-            event.preventDefault(); // Previne o comportamento padrão de envio do formulário
-            const numero = document.getElementById('numero').value;
-            const status = document.getElementById('status').value;
+    event.preventDefault(); // Previne o comportamento padrão de envio do formulário
+    const numero = document.getElementById('numero').value;
+    const status = document.getElementById('status').value;
 
-            try {
-                // Envia os dados para o servidor
-                const response = await fetch('https://rifa-test3.onrender.com/numbers', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ numero, status })
-                });
+    try {
+        // Envia os dados para o servidor
+        const response = await fetch('https://rifa-test3.onrender.com/update-number', {
+            method: 'POST',  // Mudou de GET para POST
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ numero, status })
+        });
 
-                if (response.ok) {
-                    // Atualiza o histórico com a alteração
-                    updateHistorico(numero, status);
+        if (response.ok) {
+            // Atualiza o histórico com a alteração
+            updateHistorico(numero, status);
 
-                    // Exibe uma mensagem de confirmação
-                    alert(`Número: ${numero} alterado para ${status === 'disponivel' ? 'Disponível' : 'Comprado'}`);
-                } else {
-                    alert('Erro ao atualizar o status do número');
-                }
-            } catch (error) {
-                console.error('Erro na comunicação com o servidor:', error);
-                alert('Erro ao enviar os dados para o servidor');
-            }
+            // Exibe uma mensagem de confirmação
+            alert(`Número: ${numero} alterado para ${status === 'disponivel' ? 'Disponível' : 'Comprado'}`);
+
+            // Recarregar os números para refletir a mudança
+            loadNumeros(); // Chamada para recarregar os números
+        } else {
+            alert('Erro ao atualizar o status do número');
         }
+    } catch (error) {
+        console.error('Erro na comunicação com o servidor:', error);
+        alert('Erro ao atualizar o status do número');
+    }
+}
 
+// Função para carregar os números atualizados
+async function loadNumeros() {
+    try {
+        const response = await fetch('https://rifa-test3.onrender.com/numbers');
+        const data = await response.json();
+        console.log('Números atualizados:', data);
+
+        // Atualize a interface com os dados atualizados
+        const historicoElement = document.getElementById('historico');
+        historicoElement.innerHTML = ''; // Limpa o histórico
+
+        // Exibe os números atualizados no histórico
+        data.numeros.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = `Número ${item.numero} está ${item.status === 'disponivel' ? 'Disponível' : 'Comprado'}`;
+            historicoElement.appendChild(li);
+        });
+    } catch (error) {
+        console.error('Erro ao carregar números:', error);
+    }
+}
+
+// Chama essa função para carregar os números ao carregar a página
+window.onload = () => {
+    loadNumeros();
+};
         // Verifica se está logado ao carregar a página
         window.onload = () => {
             if (isLoggedIn()) {
