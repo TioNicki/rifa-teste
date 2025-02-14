@@ -224,9 +224,10 @@ async function checkNumberAvailability(numero) {
 // Função para exibir os números disponíveis em uma caixa de diálogo
 function showAvailableNumbers(numbers) {
     const availableNumbers = numbers.filter(num => num.status !== 'comprado');
-    
+
     // Gerar lista de números disponíveis
     const numbersList = availableNumbers.map(num => num.numero).join(", ");
+
     const dialog = document.createElement('div');
     dialog.style.position = 'fixed';
     dialog.style.top = '50%';
@@ -252,15 +253,22 @@ function showAvailableNumbers(numbers) {
         dialog.style.fontSize = '16px';
         dialog.style.padding = '15px';
     }
-    dialog.innerHTML = `
-        <h3>Número Não Disponível</h3>
-        <p>O número selecionado já foi comprado. Por favor, escolha um dos números disponíveis abaixo:</p>
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
-            ${availableNumbers.map(num => `<span style="background-color: #d63384; color: white; padding: 10px; border-radius: 50%; font-weight: bold;">${num.numero}</span>`).join('')}
-        </div>
-        <button onclick="closeDialog()" style="margin-top: 20px; background-color: #d63384; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer;">Fechar</button>
-    `;
-    document.body.appendChild(dialog);
+
+    // Se existirem números disponíveis
+    if (availableNumbers.length > 0) {
+        dialog.innerHTML = `
+            <h3 style="font-size: 18px; color: #d63384;">Número Não Disponível</h3>
+            <p style="font-size: 16px;">O número selecionado já foi comprado. Por favor, escolha um dos números disponíveis abaixo:</p>
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+                ${availableNumbers.map(num => `<span style="background-color: #d63384; color: white; padding: 8px 12px; border-radius: 50%; font-weight: bold; font-size: 14px;">${num.numero}</span>`).join('')}
+            </div>
+            <button onclick="closeDialog()" style="margin-top: 20px; background-color: #d63384; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">Fechar</button>
+        `;
+        document.body.appendChild(dialog);
+    } else {
+        // Caso não haja números disponíveis, fecha a caixa de diálogo automaticamente
+        alert("Todos os números já foram comprados. Tente novamente mais tarde.");
+    }
 }
 
 // Função para fechar a caixa de diálogo
@@ -270,7 +278,6 @@ function closeDialog() {
         dialog.remove();
     }
 }
-
 // Alteração no submit do formulário para verificar a disponibilidade do número
 document.getElementById("payment-form").addEventListener("submit", function (event) {
     event.preventDefault();
