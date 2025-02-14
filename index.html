@@ -181,42 +181,43 @@
 
     <script>
         // Função para buscar os números da rifa
-        async function checkNumbers() {
-            try {
-                const response = await fetch('https://rifa-test3.onrender.com/numbers');
-                const data = await response.json();
-    
-                const numbersGrid = document.querySelector('.number-grid');
-                numbersGrid.innerHTML = ''; // Limpar números anteriores
-    
-                data.numeros.forEach(num => {
-                    const numberElement = document.createElement('div');
-                    numberElement.classList.add('number');
-    
-                    numberElement.textContent = num.numero;
-    
-                    // Verifica se o número foi comprado e adiciona a classe adequada
-                    if (num.status === 'comprado') {
-                        numberElement.style.backgroundColor = '#ff4c4c'; // Cor de fundo para números comprados
-                        numberElement.style.cursor = 'not-allowed'; // Impede a seleção
-                    } else {
-                        numberElement.style.backgroundColor = '#d63384'; // Cor para números disponíveis
-                        numberElement.style.cursor = 'pointer'; // Permite a seleção
-                        numberElement.onclick = () => selectNumber(num.numero); // Função de seleção de número
-                    }
-    
-                    numbersGrid.appendChild(numberElement);
-                });
-            } catch (error) {
-                console.error('Erro ao buscar números:', error);
+       // Função para buscar os números da rifa
+// Função para buscar os números da rifa
+async function checkNumbers() {
+    try {
+        const response = await fetch('https://rifa-test3.onrender.com/update-number');
+        const data = await response.json();
+
+        const numbersGrid = document.querySelector('#numbers-grid');
+        numbersGrid.innerHTML = ''; // Limpar números anteriores
+
+        data.numeros.forEach(num => {
+            const numberElement = document.createElement('div');
+            numberElement.classList.add('number');
+
+            numberElement.textContent = num.numero;
+
+            // Verifica se o número foi comprado e adiciona a classe adequada
+            if (num.status === 'comprado') {
+                numberElement.style.backgroundColor = '#ff4c4c'; // Cor de fundo para números comprados
+                numberElement.style.cursor = 'not-allowed'; // Impede a seleção
+            } else {
+                numberElement.style.backgroundColor = '#d63384'; // Cor para números disponíveis
+                numberElement.style.cursor = 'pointer'; // Permite a seleção
+                numberElement.onclick = () => selectNumber(num.numero); // Função de seleção de número
             }
-        }
-    
-        // Função para selecionar o número e preenchê-lo no formulário
-        function selectNumber(numero) {
-            document.getElementById('numero').value = numero;
-        }
-    
+
+            numbersGrid.appendChild(numberElement);
+        });
+    } catch (error) {
+        console.error('Erro ao buscar números:', error);
+    }
+}
+
+// Função para selecionar o número e preenchê-lo no formulário
+function selectNumber(numero) {
+    document.getElementById('numero').value = numero;
+}
         // Chama a função para carregar os números ao carregar a página
         window.onload = checkNumbers;
     
