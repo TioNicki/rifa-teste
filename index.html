@@ -200,64 +200,45 @@ async function checkNumberAvailability(numero) {
         return false;
     }
 }
-// Função para verificar se o número está disponível e mostrar uma mensagem de espera
-async function checkAvailabilityAndReserve() {
-    // Exibe a mensagem de "Aguarde" enquanto está processando
-    const loadingMessage = document.createElement('div');
-    loadingMessage.style.position = 'fixed';
-    loadingMessage.style.top = '50%';
-    loadingMessage.style.left = '50%';
-    loadingMessage.style.transform = 'translate(-50%, -50%)';
-    loadingMessage.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    loadingMessage.style.color = 'white';
-    loadingMessage.style.padding = '20px';
-    loadingMessage.style.borderRadius = '10px';
-    loadingMessage.style.textAlign = 'center';
-    loadingMessage.style.zIndex = '1000';
-    loadingMessage.style.fontSize = '18px';
-    loadingMessage.style.fontWeight = 'bold';
-    loadingMessage.innerText = 'Aguarde enquanto verificamos a disponibilidade do número escolhido...';
-    document.body.appendChild(loadingMessage);
 
-    try {
-        const response = await fetch('https://rifa-test3.onrender.com/numbers');
-        const data = await response.json();
+// Função para exibir os números disponíveis em uma caixa de diálogo
+// Função para exibir os números disponíveis em uma caixa de diálogo
+function showAvailableNumbers(numbers) {
+    const availableNumbers = numbers.filter(num => num.status !== 'comprado');
+    
+    // Gerar lista de números disponíveis
+    const numbersList = availableNumbers.map(num => num.numero).join(", ");
 
-        // Remove a mensagem de "Aguarde" após a verificação
-        loadingMessage.remove();
+    const dialog = document.createElement('div');
+    dialog.style.position = 'fixed';
+    dialog.style.top = '50%';
+    dialog.style.left = '50%';
+    dialog.style.transform = 'translate(-50%, -50%)';
+    dialog.style.backgroundColor = '#fff';
+    dialog.style.border = '2px solid #d63384';
+    dialog.style.padding = '15px';
+    dialog.style.textAlign = 'center';
+    dialog.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+    dialog.style.zIndex = '1000';
+    dialog.style.maxWidth = '80%';  // Ajusta o tamanho da caixa
+    dialog.style.width = '300px';   // Largura fixa para manter o tamanho pequeno
+    dialog.style.opacity = '0.9';  // Torna o fundo um pouco transparente
+    dialog.innerHTML = `
+        <h3 style="font-size: 18px; color: #d63384;">Número Não Disponível</h3>
+        <p style="font-size: 16px;">O número selecionado já foi comprado. Por favor, escolha um dos números disponíveis abaixo:</p>
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+            ${availableNumbers.map(num => `<span style="background-color: #d63384; color: white; padding: 8px 12px; border-radius: 50%; font-weight: bold; font-size: 14px;">${num.numero}</span>`).join('')}
+        </div>
+        <button onclick="closeDialog()" style="margin-top: 20px; background-color: #d63384; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">Fechar</button>
+    `;
+    document.body.appendChild(dialog);
+}
 
-        // Verificar se o número está disponível
-        const numeroSelecionado = document.getElementById('numero').value;
-        const numeroDisponivel = data.numeros.find(num => num.numero === parseInt(numeroSelecionado));
-
-        if (numeroDisponivel && numeroDisponivel.status === 'disponível') {
-            // Número disponível, prosseguir com a reserva
-            const nome = document.getElementById("nome").value;
-            const telefone = document.getElementById("telefone").value;
-
-            // Envia os dados via fetch
-            const response = await fetch('https://rifa-test3.onrender.com/salvar', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ nome_completo: nome, telefone: telefone, numero_rifa: numeroSelecionado })
-            });
-
-            if (response.ok) {
-                // Exibe o sucesso da reserva e o QR Code
-                document.getElementById("pix-container").classList.remove("hidden");
-            } else {
-                alert('Erro ao reservar o número. Tente novamente.');
-            }
-        } else {
-            // Número não disponível, exibe a caixa de números disponíveis
-            showAvailableNumbers(data.numeros);
-        }
-    } catch (error) {
-        console.error("Erro ao verificar a disponibilidade:", error);
-        loadingMessage.remove();
-        alert('Erro ao verificar a disponibilidade do número. Tente novamente mais tarde.');
+// Função para fechar a caixa de diálogo
+function closeDialog() {
+    const dialog = document.querySelector('div[style*="position: fixed"]');
+    if (dialog) {
+        dialog.remove();
     }
 }
 // Função para fechar a caixa de diálogo
