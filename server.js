@@ -131,7 +131,6 @@ app.post('/update-number', (req, res) => {
         console.error("Erro ao salvar numeros.json:", err);
         res.status(500).json({ message: 'Erro ao atualizar o arquivo de números.' });
     }
-});
 // Iniciar o servidor
 app.listen(port, () => {
     console.log(`Servidor rodando na porta ${port}`);
