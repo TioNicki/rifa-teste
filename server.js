@@ -120,17 +120,6 @@ app.post('/update-number', (req, res) => {
         res.status(500).json({ message: 'Erro ao atualizar o arquivo de números.' });
     }
 });
-    // Atualiza o status do número para comprado
-    numeros.numeros[numeroIndex].status = status;
-
-    // Grava a atualização no arquivo de forma segura
-    try {
-        fs.writeFileSync(NUMEROS_FILE, JSON.stringify(numeros, null, 2));
-        res.json({ message: 'Número atualizado com sucesso.' });
-    } catch (err) {
-        console.error("Erro ao salvar numeros.json:", err);
-        res.status(500).json({ message: 'Erro ao atualizar o arquivo de números.' });
-    }
 // Iniciar o servidor
 app.listen(port, () => {
     console.log(`Servidor rodando na porta ${port}`);
