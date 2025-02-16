@@ -11,6 +11,7 @@ app.use(cors({
     origin: 'https://aquamarine-bubblegum-cafe41.netlify.app'
 }));
 
+
 // Configuração do body-parser
 app.use(bodyParser.json());
 
@@ -60,39 +61,33 @@ app.get('/getdata', (req, res) => {
 const NUMEROS_FILE = './numeros.json';
 
 // Função para garantir que o arquivo numeros.json exista
-function verificarArquivoNumeros(callback) {
-    fs.readFile(NUMEROS_FILE, 'utf8', (err, data) => {
-        if (err) {
-            // Se o arquivo não existir, cria um arquivo inicial
-            const numerosInicial = { numeros: [] };
-            fs.writeFile(NUMEROS_FILE, JSON.stringify(numerosInicial, null, 2), (writeErr) => {
-                if (writeErr) {
-                    return callback(writeErr);
-                }
-                callback(null, numerosInicial);
-            });
+function carregarNumeros() {
+    try {
+        if (fs.existsSync(NUMEROS_FILE)) {
+            const data = fs.readFileSync(NUMEROS_FILE, 'utf8');
+            return JSON.parse(data);
         } else {
-            try {
-                const numeros = JSON.parse(data);
-                callback(null, numeros);
-            } catch (parseErr) {
-                callback(parseErr);
-            }
+            const numerosIniciais = { numeros: [] };
+            fs.writeFileSync(NUMEROS_FILE, JSON.stringify(numerosIniciais, null, 2));
+            return numerosIniciais;
         }
-    });
+    } catch (error) {
+        console.error("Erro ao carregar numeros.json:", error);
+        return { numeros: [] };
+    }
 }
 
-// Rota para buscar os números
+// Carrega os números uma vez na inicialização do servidor
+let numeros = carregarNumeros();
+
+// Rota para buscar os números sempre atualizados
 app.get('/update-number', (req, res) => {
-    verificarArquivoNumeros((err, numeros) => {
-        if (err) {
-            return res.status(500).json({ message: 'Erro ao ler o arquivo de números.' });
-        }
-        res.json(numeros);
-    });
+    // Sempre carregar os números do arquivo antes de enviar a resposta
+    numeros = carregarNumeros();
+    res.json(numeros);
 });
 
-// Rota para atualizar o status de um número
+// Rota para atualizar o status de um número corretamente
 app.post('/update-number', (req, res) => {
     const { numero, status } = req.body;
 
@@ -100,32 +95,43 @@ app.post('/update-number', (req, res) => {
         return res.status(400).json({ message: 'Número e status são obrigatórios.' });
     }
 
-    verificarArquivoNumeros((err, numeros) => {
-        if (err) {
-            return res.status(500).json({ message: 'Erro ao ler o arquivo de números.' });
-        }
+    // Certifique-se de carregar os números mais recentes antes de atualizar
+    numeros = carregarNumeros();
 
-        const numeroIndex = numeros.numeros.findIndex(n => n.numero == numero); // Comparação flexível
+    const numeroIndex = numeros.numeros.findIndex(n => n.numero == numero);
 
+    if (numeroIndex === -1) {
+        return res.status(404).json({ message: 'Número não encontrado.' });
+    }
 
-        if (numeroIndex === -1) {
-            return res.status(404).json({ message: 'Número não encontrado.' });
-        }
+    if (numeros.numeros[numeroIndex].status === 'comprado') {
+        return res.status(400).json({ message: 'Número já foi comprado.' });
+    }
 
-        // Atualiza o status do número
-        numeros.numeros[numeroIndex].status = status;
+    // Atualiza o status do número
+    numeros.numeros[numeroIndex].status = status;
 
-        // Grava as mudanças no arquivo JSON
-        fs.writeFile(NUMEROS_FILE, JSON.stringify(numeros, null, 2), (err) => {
-            if (err) {
-                return res.status(500).json({ message: 'Erro ao atualizar o arquivo de números.' });
-            }
-
-            res.json({ message: 'Número atualizado com sucesso.' });
-        });
-    });
+    // Salvar os números no arquivo JSON sem sobrescrevê-lo incorretamente
+    try {
+        fs.writeFileSync(NUMEROS_FILE, JSON.stringify(numeros, null, 2));
+        res.json({ message: 'Número atualizado com sucesso.' });
+    } catch (err) {
+        console.error("Erro ao salvar numeros.json:", err);
+        res.status(500).json({ message: 'Erro ao atualizar o arquivo de números.' });
+    }
 });
+    // Atualiza o status do número para comprado
+    numeros.numeros[numeroIndex].status = status;
 
+    // Grava a atualização no arquivo de forma segura
+    try {
+        fs.writeFileSync(NUMEROS_FILE, JSON.stringify(numeros, null, 2));
+        res.json({ message: 'Número atualizado com sucesso.' });
+    } catch (err) {
+        console.error("Erro ao salvar numeros.json:", err);
+        res.status(500).json({ message: 'Erro ao atualizar o arquivo de números.' });
+    }
+});
 // Iniciar o servidor
 app.listen(port, () => {
     console.log(`Servidor rodando na porta ${port}`);
