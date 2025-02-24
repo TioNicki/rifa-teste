@@ -56,6 +56,11 @@
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+        .numbers-list {
+            margin-top: 20px;
+            border-top: 2px solid #ccc;
+            padding-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -86,10 +91,19 @@
             <button type="submit">Atualizar Status</button>
         </form>
 
+        <button onclick="showNumeros()">Ver Números e Status</button>
+
         <h2>Histórico de Atualizações</h2>
         <ul id="historico">
             <!-- O histórico será gerado dinamicamente aqui -->
         </ul>
+
+        <div id="numbersList" class="numbers-list" style="display:none;">
+            <h3>Números e Status Atuais</h3>
+            <ul id="numerosStatus">
+                <!-- Os números e status serão carregados aqui -->
+            </ul>
+        </div>
 
         <button class="logout-btn" onclick="logout()">Sair</button>
     </div>
@@ -194,6 +208,30 @@
             } catch (error) {
                 console.error('Erro na comunicação com o servidor:', error);
                 alert('Erro ao atualizar o status do número');
+            }
+        }
+
+        // Função para mostrar números e status
+        async function showNumeros() {
+            try {
+                const response = await fetch('https://rifa-test3.onrender.com/get-numeros');
+                const data = await response.json();
+
+                const numerosStatusElement = document.getElementById('numerosStatus');
+                const numbersListElement = document.getElementById('numbersList');
+                numerosStatusElement.innerHTML = ''; // Limpa a lista de números
+
+                data.numeros.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = `Número: ${item.numero} - Status: ${item.status === 'disponivel' ? 'Disponível' : 'Comprado'}`;
+                    numerosStatusElement.appendChild(li);
+                });
+
+                // Exibe a lista de números e status
+                numbersListElement.style.display = 'block';
+            } catch (error) {
+                console.error('Erro ao carregar números e status:', error);
+                alert('Erro ao carregar números e status');
             }
         }
 
