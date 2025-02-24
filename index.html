@@ -180,13 +180,13 @@
     
 
     <script>
-        // Função para buscar os números da rifa
-       // Função para buscar os números da rifa
-// Função para buscar os números da rifa
 // Função para verificar a disponibilidade do número
 async function checkNumberAvailability(numero) {
     try {
-        const response = await fetch('https://rifa-test3.onrender.com/update-number');
+        const response = await fetch('https://rifa-test3.onrender.com/get-numeros');
+        if (!response.ok) {
+            throw new Error(`Erro na requisição: ${response.status}`);
+        }
         const data = await response.json();
 
         const numeroEncontrado = data.numeros.find(num => num.numero === parseInt(numero));
@@ -200,27 +200,6 @@ async function checkNumberAvailability(numero) {
         return false;
     }
 }
-
-// Função para exibir os números disponíveis em uma caixa de diálogo
-// Função para exibir os números disponíveis em uma caixa de diálogo
-// Função para verificar a disponibilidade do número
-async function checkNumberAvailability(numero) {
-    try {
-        const response = await fetch('https://rifa-test3.onrender.com/update-number');
-        const data = await response.json();
-
-        const numeroEncontrado = data.numeros.find(num => num.numero === parseInt(numero));
-
-        if (numeroEncontrado && numeroEncontrado.status === 'comprado') {
-            return false; // O número não está disponível
-        }
-        return true; // O número está disponível
-    } catch (error) {
-        console.error('Erro ao verificar disponibilidade do número:', error);
-        return false;
-    }
-}
-
 // Função para exibir os números disponíveis em uma caixa de diálogo
 function showAvailableNumbers(numbers) {
     const availableNumbers = numbers.filter(num => num.status !== 'comprado');
@@ -318,7 +297,7 @@ document.getElementById("payment-form").addEventListener("submit", function (eve
                 });
             } else {
                 // Se o número não estiver disponível, exibe a caixa de diálogo
-                fetch('https://rifa-test3.onrender.com/update-number')
+                fetch('https://rifa-test3.onrender.com/get-numeros')
                     .then(response => response.json())
                     .then(data => showAvailableNumbers(data.numeros))
                     .catch(error => console.error('Erro ao buscar números disponíveis:', error));
@@ -329,50 +308,6 @@ document.getElementById("payment-form").addEventListener("submit", function (eve
             document.getElementById("error-message").textContent = "Erro ao verificar disponibilidade do número. Tente novamente.";
         });
 });
-
-
-        // Chama a função para carregar os números ao carregar a página
-        window.onload = checkNumbers;
-    
-        document.getElementById("payment-form").addEventListener("submit", function (event) {
-            event.preventDefault();
-    
-            const nome = document.getElementById("nome").value;
-            const telefone = document.getElementById("telefone").value;
-            const numero = document.getElementById("numero").value;
-    
-            // Exibe o indicador de carregamento
-            document.getElementById("loading-indicator").style.display = "block";
-            document.getElementById("error-message").textContent = "";  // Limpa mensagem de erro
-    
-            // Envia os dados via fetch
-            fetch('https://rifa-test3.onrender.com/salvar', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ nome_completo: nome, telefone: telefone, numero_rifa: numero })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erro na requisição');
-                }
-                return response.json();
-            })
-            .then(data => {
-                document.getElementById("loading-indicator").style.display = "none";  // Esconde o carregamento
-                if (data.message) {
-                    document.getElementById("pix-container").classList.remove("hidden"); // Exibe a seção de pagamento
-                } else {
-                    document.getElementById("error-message").textContent = "Erro ao salvar dados. Tente novamente.";
-                }
-            })
-            .catch(error => {
-                console.error("Erro ao salvar dados:", error);
-                document.getElementById("loading-indicator").style.display = "none"; // Esconde o carregamento
-                document.getElementById("error-message").textContent = "Erro ao salvar dados. Tente novamente.";
-            });
-        });
     </script>        
 </body>
 </html>
