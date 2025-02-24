@@ -224,6 +224,9 @@
                 const numbersListElement = document.getElementById('statusSection');
                 numerosStatusElement.innerHTML = ''; // Limpa a lista de números
 
+                // Ordena os números em ordem crescente
+                data.numeros.sort((a, b) => a.numero - b.numero);
+
                 data.numeros.forEach(item => {
                     const li = document.createElement('li');
                     li.textContent = `Número: ${item.numero} - Status: ${item.status === 'disponivel' ? 'Disponível' : 'Comprado'}`;
