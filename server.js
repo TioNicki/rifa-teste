@@ -119,11 +119,6 @@ app.post('/update-number', async (req, res) => {
             return res.status(404).json({ message: 'Número não encontrado.' });
         }
 
-        // Verifica se o número já foi comprado
-        if (result.rows[0].status === 'comprado') {
-            return res.status(400).json({ message: 'Número já foi comprado.' });
-        }
-
         // Atualiza o status do número no banco de dados
         await client.query('UPDATE numeros SET status = $1 WHERE numero = $2', [status, numero]);
         res.json({ message: 'Número atualizado com sucesso.' });
