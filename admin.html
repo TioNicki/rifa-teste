@@ -91,14 +91,17 @@
             <button type="submit">Atualizar Status</button>
         </form>
 
-        <button onclick="showNumeros()">Ver Números e Status</button>
+        <button onclick="showSection('historico')">Ver Histórico</button>
+        <button onclick="showSection('status')">Ver Status</button>
 
-        <h2>Histórico de Atualizações</h2>
-        <ul id="historico">
-            <!-- O histórico será gerado dinamicamente aqui -->
-        </ul>
+        <div id="historicoSection" style="display:none;">
+            <h2>Histórico de Atualizações</h2>
+            <ul id="historico">
+                <!-- O histórico será gerado dinamicamente aqui -->
+            </ul>
+        </div>
 
-        <div id="numbersList" class="numbers-list" style="display:none;">
+        <div id="statusSection" class="numbers-list" style="display:none;">
             <h3>Números e Status Atuais</h3>
             <ul id="numerosStatus">
                 <!-- Os números e status serão carregados aqui -->
@@ -218,7 +221,7 @@
                 const data = await response.json();
 
                 const numerosStatusElement = document.getElementById('numerosStatus');
-                const numbersListElement = document.getElementById('numbersList');
+                const numbersListElement = document.getElementById('statusSection');
                 numerosStatusElement.innerHTML = ''; // Limpa a lista de números
 
                 data.numeros.forEach(item => {
@@ -232,6 +235,22 @@
             } catch (error) {
                 console.error('Erro ao carregar números e status:', error);
                 alert('Erro ao carregar números e status');
+            }
+        }
+
+        // Função para mostrar a seção correspondente ao botão clicado
+        function showSection(section) {
+            const historicoSection = document.getElementById('historicoSection');
+            const statusSection = document.getElementById('statusSection');
+
+            if (section === 'historico') {
+                historicoSection.style.display = 'block';
+                statusSection.style.display = 'none';
+                loadHistorico();
+            } else if (section === 'status') {
+                historicoSection.style.display = 'none';
+                statusSection.style.display = 'block';
+                showNumeros();
             }
         }
 
