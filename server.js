@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
 const cors = require('cors');
+const helmet = require('helmet'); // Adicionando Helmet para configurar CSP
 const { Client } = require('pg');
 
 const app = express();
@@ -29,6 +30,20 @@ client.connect()
     .catch(err => {
         console.error("Erro ao conectar ao banco de dados", err);
     });
+
+// Configurar Content Security Policy (CSP) usando Helmet
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: ["'self'", 'https://www.gstatic.com'],
+            scriptSrc: ["'self'", 'https://www.gstatic.com'],
+            imgSrc: ["'self'", 'data:', 'https://www.gstatic.com'],
+            connectSrc: ["'self'", 'https://rifa-test3.onrender.com'],
+            fontSrc: ["'self'", 'https://www.gstatic.com'],
+        }
+    }
+}));
 
 // Definições do bot do Telegram
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
