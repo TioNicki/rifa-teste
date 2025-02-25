@@ -46,8 +46,8 @@ app.use(helmet({
 }));
 
 // Definições do bot do Telegram
-const 7633525229:AAHVUDMK5vDPqcI8L7OiKRDR_zRrk0l667Y = process.env.7633525229:AAHVUDMK5vDPqcI8L7OiKRDR_zRrk0l667Y;
-const 6991171828 = process.env.6991171828;
+const TELEGRAM_BOT_TOKEN = '7633525229:AAHVUDMK5vDPqcI8L7OiKRDR_zRrk0l667Y';
+const TELEGRAM_CHAT_ID = '6991171828';
 
 // Rota para salvar os dados e enviar ao Telegram
 app.post('/salvar', async (req, res) => {
@@ -68,8 +68,8 @@ app.post('/salvar', async (req, res) => {
                            [nome_completo, telefone, numero_rifa]);
 
         // Envia a mensagem para o Telegram
-        await axios.post(`https://api.telegram.org/bot${7633525229:AAHVUDMK5vDPqcI8L7OiKRDR_zRrk0l667Y}/sendMessage`, {
-            chat_id: 6991171828,
+        await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+            chat_id: TELEGRAM_CHAT_ID,
             text: mensagem,
             parse_mode: 'Markdown'
         });
