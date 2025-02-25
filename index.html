@@ -204,6 +204,9 @@ async function checkNumberAvailability(numero) {
 function showAvailableNumbers(numbers) {
     const availableNumbers = numbers.filter(num => num.status !== 'comprado');
 
+    // Ordena os números disponíveis em ordem crescente
+    availableNumbers.sort((a, b) => a.numero - b.numero);
+
     // Criando o fundo transparente para foco na caixa de diálogo
     const overlay = document.createElement('div');
     overlay.style.position = 'fixed';
