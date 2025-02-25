@@ -46,8 +46,8 @@ app.use(helmet({
 }));
 
 // Definições do bot do Telegram
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+const 7633525229:AAHVUDMK5vDPqcI8L7OiKRDR_zRrk0l667Y = process.env.7633525229:AAHVUDMK5vDPqcI8L7OiKRDR_zRrk0l667Y;
+const 6991171828 = process.env.6991171828;
 
 // Rota para salvar os dados e enviar ao Telegram
 app.post('/salvar', async (req, res) => {
