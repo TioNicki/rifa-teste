@@ -57,10 +57,10 @@ app.post('/salvar', async (req, res) => {
         return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
     }
 
-    const mensagem = `\u2709 Nova Reserva de Rifa!\n\n` +
-                     `\ud83d\udc64 Nome: ${nome_completo}\n` +
-                     `\ud83d\udcde Telefone: ${telefone}\n` +
-                     `\ud83c\udfaf Número da Rifa: ${numero_rifa}`;
+    const mensagem = `\u2709 *Nova Reserva de Rifa!*\n\n` +
+                     `\ud83d\udc64 *Nome:* ${nome_completo}\n` +
+                     `\ud83d\udcde *Telefone:* ${telefone}\n` +
+                     `\ud83c\udfaf *Número da Rifa:* ${numero_rifa}`;
 
     try {
         // Salva a reserva no banco de dados
@@ -68,13 +68,17 @@ app.post('/salvar', async (req, res) => {
                            [nome_completo, telefone, numero_rifa]);
 
         // Envia a mensagem para o Telegram
-        await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        const telegramResponse = await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
             chat_id: TELEGRAM_CHAT_ID,
             text: mensagem,
             parse_mode: 'Markdown'
         });
 
-        res.json({ message: 'Informações enviadas para o Telegram com sucesso' });
+        if (telegramResponse.data.ok) {
+            res.json({ message: 'Informações enviadas para o Telegram com sucesso' });
+        } else {
+            throw new Error('Erro ao enviar mensagem para o Telegram');
+        }
     } catch (error) {
         console.error("Erro ao processar a solicitação:", error);
         res.status(500).json({ message: 'Erro ao processar a solicitação' });
