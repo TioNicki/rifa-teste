@@ -122,7 +122,7 @@
             const username = prompt("Digite o nome de usuário:");
             const password = prompt("Digite a senha:");
 
-            if (username === 'milena.silva' && password === '212450') {
+            if (username === 'milena.karoliny' && password === '212450') {
                 localStorage.setItem('isLoggedIn', 'true');
                 window.location.reload(); // Recarregar a página após login
             } else {
@@ -204,7 +204,7 @@
                     alert(`Número: ${numero} alterado para ${status === 'disponivel' ? 'Disponível' : 'Comprado'}`);
 
                     // Recarregar os números para refletir a mudança
-                    loadNumeros(); // Chamada para recarregar os números
+                    showNumeros(); // Chamada para recarregar os números
                 } else {
                     alert('Erro ao atualizar o status do número');
                 }
@@ -223,9 +223,6 @@
                 const numerosStatusElement = document.getElementById('numerosStatus');
                 const numbersListElement = document.getElementById('statusSection');
                 numerosStatusElement.innerHTML = ''; // Limpa a lista de números
-
-                // Ordena os números em ordem crescente
-                data.numeros.sort((a, b) => a.numero - b.numero);
 
                 data.numeros.forEach(item => {
                     const li = document.createElement('li');
