@@ -68,8 +68,8 @@ app.post('/salvar', async (req, res) => {
                            [nome_completo, telefone, numero_rifa]);
 
         // Envia a mensagem para o Telegram
-        await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-            chat_id: TELEGRAM_CHAT_ID,
+        await axios.post(`https://api.telegram.org/bot${7633525229:AAHVUDMK5vDPqcI8L7OiKRDR_zRrk0l667Y}/sendMessage`, {
+            chat_id: 6991171828,
             text: mensagem,
             parse_mode: 'Markdown'
         });
